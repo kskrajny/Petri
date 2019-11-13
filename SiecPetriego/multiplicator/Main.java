@@ -21,10 +21,15 @@ public class Main {
 
         private Collection<Transition<String>> coll;
         private PetriNet<String> net;
+        private Integer ile = 0;
 
         public Pomocniczy(Collection<Transition<String>> coll, PetriNet<String> net){
             this.coll = coll;
             this.net = net;
+        }
+
+        public Integer getIle(){
+            return this.ile;
         }
 
         @Override
@@ -32,8 +37,11 @@ public class Main {
             try {
                 while(true) {
                     net.fire(coll);
+                    this.ile++;
                 }
             } catch (InterruptedException e) {
+            } finally {
+                System.out.println(Thread.currentThread().getName()+" "+this.ile);
             }
         }
     }
@@ -108,11 +116,14 @@ public class Main {
         Collection<Transition<String>> finish = new HashSet<>();
         finish.add(last);
 
-        Runnable pom = new Pomocniczy(all, net);
-        thread1 = new Thread(pom,"t1");
-        thread2 = new Thread(pom, "t2");
-        thread3 = new Thread(pom, "t3");
-        thread4 = new Thread(pom, "t4");
+        Runnable r1 = new Pomocniczy(all, net);
+        Runnable r2 = new Pomocniczy(all, net);
+        Runnable r3 = new Pomocniczy(all, net);
+        Runnable r4 = new Pomocniczy(all, net);
+        thread1 = new Thread(r1, "t1");
+        thread2 = new Thread(r2, "t2");
+        thread3 = new Thread(r3, "t3");
+        thread4 = new Thread(r4, "t4");
 
         thread1.start();
         thread2.start();
@@ -121,6 +132,7 @@ public class Main {
 
         try {
             net.fire(finish);
+            System.out.println(net.get("Final"));
         } catch (InterruptedException e) {
             System.out.println("ERROR in fire()");
         }
@@ -129,7 +141,5 @@ public class Main {
         thread2.interrupt();
         thread3.interrupt();
         thread4.interrupt();
-
-        System.out.println(net.get("Final"));
     }
 }

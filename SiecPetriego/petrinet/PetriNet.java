@@ -234,6 +234,18 @@ public class PetriNet<T> {
         return false;
     }
 
+    // returns transitions which are legal in given map
+    public Collection<Transition<T>> checkWhich(Collection<Transition<T>> transitions,  Map<T, Integer> petri){
+        Collection<Transition<T>> set = new HashSet<>();
+        for(Transition<T> t : transitions){
+            if(checkOne(t, petri)){
+                set.add(t);
+            }
+        }
+        return set;
+    }
+
+
     // activate one of given transitions in global map "this.net"
     private Transition<T> perform(Collection<Transition<T>> transitions){
         for(Transition<T> t : transitions){
